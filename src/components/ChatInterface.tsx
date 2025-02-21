@@ -45,7 +45,7 @@ export const ChatInterface = () => {
 
     // Simulate bot response
     const botResponse = await fetchData()
-    console.log("botResponse", botResponse)
+    //console.log("botResponse", botResponse)
     setTimeout(() => {
       const botMessage: Message = {
         id: messages.length + 2,
