@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { ChatMessage } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
 import { TypingIndicator } from "./TypingIndicator";
+import { fetchData } from "@/lib/api";
 
 interface Message {
   id: number;
@@ -43,6 +44,8 @@ export const ChatInterface = () => {
     setIsTyping(true);
 
     // Simulate bot response
+    const botResponse = await fetchData()
+    console.log("botResponse", botResponse)
     setTimeout(() => {
       const botMessage: Message = {
         id: messages.length + 2,
