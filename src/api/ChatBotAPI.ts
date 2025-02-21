@@ -1,18 +1,20 @@
-import { createClient } from "@supabase/supabase-js";
-
 export default class ChatBotAPI {
-  #supabase; // Private class field
+  constructor() {}
 
-  constructor() {
-    this.#supabase = createClient(
-      "https://<project>.supabase.co",
-      "<your-anon-key>"
-    );
-  }
+  async postMessage(message: string) {
+    const { response, error } = await fetch("https://convo-companion-production.up.railway.app/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ message }),
+    }).then((res) => res.json());
 
-  async postMessage() {
-    const { data, error } = await this.#supabase
-      .from("messages")
-      .insert([{ message: "Hello world" }]);
+    if (error) {
+      console.error("Error inserting message:", error);
+      throw new Error(error.message);
+    }
+
+    return response;
   }
 }

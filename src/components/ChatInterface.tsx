@@ -1,9 +1,8 @@
-
 import { useEffect, useRef, useState } from "react";
 import { ChatMessage } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
 import { TypingIndicator } from "./TypingIndicator";
-import { fetchData } from "@/lib/api";
+import ChatBotAPI from "@/api/ChatBotAPI";
 
 interface Message {
   id: number;
@@ -11,6 +10,8 @@ interface Message {
   isBot: boolean;
   timestamp: Date;
 }
+
+const chatBot = new ChatBotAPI();
 
 export const ChatInterface = () => {
   const [messages, setMessages] = useState<Message[]>([
@@ -43,24 +44,33 @@ export const ChatInterface = () => {
     setMessages((prev) => [...prev, userMessage]);
     setIsTyping(true);
 
-    // Simulate bot response
-    const botResponse = await fetchData()
-    console.log("botResponse", botResponse)
-    setTimeout(() => {
+    try {
+      const response = await chatBot.postMessage(content);
+
       const botMessage: Message = {
         id: messages.length + 2,
-        content: `I received your message: "${content}". This is a demo response.`,
+        content: response,
         isBot: true,
         timestamp: new Date(),
       };
+
       setMessages((prev) => [...prev, botMessage]);
+    } catch (error) {
+      const errorMessage: Message = {
+        id: messages.length + 2,
+        content: "Sorry, I encountered an error while processing your message.",
+        isBot: true,
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
       setIsTyping(false);
-    }, 1500);
+    }
   };
 
   return (
-    <div className="flex flex-col h-[600px] w-full max-w-2xl mx-auto rounded-2xl border shadow-lg overflow-hidden backdrop-blur-sm bg-white/50">
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+    <div className='flex flex-col h-[600px] w-full max-w-2xl mx-auto rounded-2xl border shadow-lg overflow-hidden backdrop-blur-sm bg-white/50'>
+      <div className='flex-1 overflow-y-auto p-4 space-y-4'>
         {messages.map((message) => (
           <ChatMessage key={message.id} {...message} />
         ))}
